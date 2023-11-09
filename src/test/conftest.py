@@ -6,11 +6,12 @@ import boto3
 import botocore.client
 import pytest
 from moto import mock_s3
+from pydantic import AnyHttpUrl
 
 from cpr_data_access.parser_models import ParserOutput, HTMLData
 from cpr_data_access.pipeline_general_models import BackendDocument
 
-from cli.test.conftest import get_text_block
+from cli.test.conftest import get_html_text_block
 
 
 class S3Client:
@@ -106,7 +107,7 @@ def get_parser_output(
     """Return a ParserOutput object with the given parameters."""
     return ParserOutput(
         document_id="test_id",
-        document_metadata=BackendDocument.parse_obj(
+        document_metadata=BackendDocument.model_validate(
             {
                 "publication_ts": "2013-01-01T00:00:00",
                 "name": "Dummy Name",
@@ -136,7 +137,7 @@ def get_parser_output(
         ),
         document_name="test_name",
         document_description="test_description",
-        document_source_url=source_url,  # type: ignore
+        document_source_url=(AnyHttpUrl(source_url) if source_url else None),
         document_cdn_object="test_cdn_object",
         document_md5_sum="test_md5_sum",
         languages=languages,
@@ -155,13 +156,13 @@ def test_parser_output_array() -> List[ParserOutput]:
         get_parser_output(
             html_data=HTMLData(
                 has_valid_text=True,
-                text_blocks=[  # type: ignore
-                    get_text_block("Table"),
-                    get_text_block("Text"),
-                    get_text_block("Text"),
-                    get_text_block("Figure"),
-                    get_text_block("Text"),
-                    get_text_block("Google Text Block"),
+                text_blocks=[
+                    get_html_text_block("Table"),
+                    get_html_text_block("Text"),
+                    get_html_text_block("Text"),
+                    get_html_text_block("Figure"),
+                    get_html_text_block("Text"),
+                    get_html_text_block("Google Text Block"),
                 ],
             ),
             source_url="https://www.google.com/path.html",
@@ -172,10 +173,10 @@ def test_parser_output_array() -> List[ParserOutput]:
         get_parser_output(
             html_data=HTMLData(
                 has_valid_text=False,
-                text_blocks=[  # type: ignore
-                    get_text_block("Table"),
-                    get_text_block("Text"),
-                    get_text_block("Google Text Block"),
+                text_blocks=[
+                    get_html_text_block("Table"),
+                    get_html_text_block("Text"),
+                    get_html_text_block("Google Text Block"),
                 ],
             ),
             source_url="https://www.google.com/path.html",
@@ -218,9 +219,9 @@ def test_parser_output_source_url_supported_lang_data() -> List[ParserOutput]:
         get_parser_output(
             html_data=HTMLData(
                 has_valid_text=True,
-                text_blocks=[  # type: ignore
-                    get_text_block("Table"),
-                    get_text_block("Google Text Block"),
+                text_blocks=[
+                    get_html_text_block("Table"),
+                    get_html_text_block("Google Text Block"),
                 ],
             ),
             source_url="https://www.example.com/files/climate-document.pdf",
@@ -237,9 +238,9 @@ def test_parser_output_source_url_un_supported_lang_data() -> List[ParserOutput]
         get_parser_output(
             html_data=HTMLData(
                 has_valid_text=True,
-                text_blocks=[  # type: ignore
-                    get_text_block("Table"),
-                    get_text_block("Google Text Block"),
+                text_blocks=[
+                    get_html_text_block("Table"),
+                    get_html_text_block("Google Text Block"),
                 ],
             ),
             source_url="https://www.example.com/files/climate-document.pdf",
