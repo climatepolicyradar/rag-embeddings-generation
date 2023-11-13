@@ -17,7 +17,7 @@ boto3 = "^1.26.153"
 aws-error-utils = "^2.7.0"
 moto = "^4.1.11"
 torch = "2.0.0"
-cpr-data-access = {git = "https://github.com/climatepolicyradar/data-access.git", tag = "0.3.0"}
+cpr-data-access = {git = "https://github.com/climatepolicyradar/data-access.git", tag = "0.4.0"}
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
