@@ -67,7 +67,7 @@ logging.config.dictConfig(DEFAULT_LOGGING)
 )
 @click.option(
     "--device",
-    type=click.Choice(["cuda", "cpu"]),
+    type=click.Choice(["cuda", "mps", "cpu"]),
     help="Device to use for embeddings generation",
     required=True,
     default="cpu",
@@ -92,15 +92,15 @@ def run_as_cli(
     Each embeddings file is called {id}.json where {id} is the document ID of the
     input. Its first line is the description embedding and all other lines are
     embeddings of each of the text blocks in the document in order. Encoding will
-    automatically run on the GPU if one is available.
+    run CPU unless device is set to 'cuda' or 'mps'.
 
     Args: input_dir: Directory containing JSON files output_dir: Directory to save
     embeddings to s3: Whether we are reading from and writing to S3. redo: Redo
     encoding for files that have already been parsed. By default, files with IDs that
     already exist in the output directory are skipped. limit (Optional[int]):
     Optionally limit the number of text samples to process. Useful for debugging.
-    device (str): Device to use for embeddings generation. Must be either "cuda" or
-    "cpu".
+    device (str): Device to use for embeddings generation. Must be either "cuda", "mps", 
+    or "cpu".
     """
     # FIXME: This solution assumes that we have a json document with language = en (
     #  supported target language) for every document in the parser output. This isn't

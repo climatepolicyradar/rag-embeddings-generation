@@ -3,6 +3,9 @@
 import os
 from typing import Set
 import re
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 SBERT_MODEL: str = os.getenv("SBERT_MODEL", "msmarco-distilbert-dot-v5")
 INDEX_ENCODER_CACHE_FOLDER: str = os.getenv("INDEX_ENCODER_CACHE_FOLDER", "/models")
