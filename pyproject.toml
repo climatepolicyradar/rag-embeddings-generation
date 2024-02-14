@@ -5,7 +5,7 @@ description = ""
 authors = ["CPR Tech <tech@climatepolicyradar.org>"]
 
 [tool.poetry.dependencies]
-python = "~3.9"
+python = "^3.9"
 sentence-transformers = "^2.2.0"
 huggingface_hub = ">=0.14.0,<1.0.0"
 click = "^8.0.4"

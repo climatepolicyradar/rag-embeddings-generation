@@ -99,8 +99,32 @@ def run_as_cli(
     encoding for files that have already been parsed. By default, files with IDs that
     already exist in the output directory are skipped. limit (Optional[int]):
     Optionally limit the number of text samples to process. Useful for debugging.
-    device (str): Device to use for embeddings generation. Must be either "cuda", "mps", 
+    device (str): Device to use for embeddings generation. Must be either "cuda", "mps",
     or "cpu".
+    """
+
+    return run_embeddings_generation(
+        input_dir=input_dir,
+        output_dir=output_dir,
+        s3=s3,
+        redo=redo,
+        device=device,
+        limit=limit,
+    )
+
+
+def run_embeddings_generation(
+    input_dir: str,
+    output_dir: str,
+    s3: bool,
+    redo: bool,
+    device: str,
+    limit: Optional[int],
+):
+    """
+    Run CLI to produce embeddings from document parser JSON outputs.
+
+    See docstring for run_as_cli for details.
     """
     # FIXME: This solution assumes that we have a json document with language = en (
     #  supported target language) for every document in the parser output. This isn't
