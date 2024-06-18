@@ -1,14 +1,24 @@
 """In-app config. Set by environment variables."""
 
 import os
-from typing import Set
+from typing import Set, Optional
 import re
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-SBERT_MODEL: str = os.getenv("SBERT_MODEL", "msmarco-distilbert-dot-v5")
-INDEX_ENCODER_CACHE_FOLDER: str = os.getenv("INDEX_ENCODER_CACHE_FOLDER", "/models")
+SBERT_MODELS: list[str] = [
+    "BAAI/bge-small-en-v1.5",  # 384 dim
+    "BAAI/bge-base-en-v1.5",  # 768 dim
+    "msmarco-distilbert-base-tas-b",  # 768 dim
+]
+
+LOCAL_DEVELOPMENT: bool = os.getenv("LOCAL_DEVELOPMENT", "False").lower() == "true"
+INDEX_ENCODER_CACHE_FOLDER: Optional[str] = (
+    os.getenv("INDEX_ENCODER_CACHE_FOLDER", "/models")
+    if not LOCAL_DEVELOPMENT
+    else None
+)
 ENCODING_BATCH_SIZE: int = int(os.getenv("ENCODING_BATCH_SIZE", "32"))
 # comma-separated 2-letter ISO codes
 TARGET_LANGUAGES: Set[str] = set(os.getenv("TARGET_LANGUAGES", "en").lower().split(","))

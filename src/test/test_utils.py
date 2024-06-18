@@ -113,7 +113,7 @@ def test_get_ids_with_suffix():
 
 def test_encode_indexer_input(test_pdf_file_json):  # noqa: F811
     """Tests that the encode_indexer_input function returns the correct embeddings."""
-    encoder_obj = SBERTEncoder(config.SBERT_MODEL)
+    encoder_obj = SBERTEncoder(config.SBERT_MODELS[0])
 
     test_pdf_file_json.update(
         {
