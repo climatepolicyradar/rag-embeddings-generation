@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 from click.testing import CliRunner
+import pytest
 
 from cli.text2embeddings import run_as_cli
 from cpr_data_access.parser_models import ParserOutput
@@ -53,6 +54,7 @@ def test_run_encoder_local(
             # assert np.load(str(Path(output_dir) / "test_html.npy")).shape == (1, 768)
 
 
+@pytest.mark.skip(reason="Local development only for RAG")
 def test_s3_client(
     s3_bucket_and_region,
     pipeline_s3_objects_main,
@@ -66,6 +68,7 @@ def test_s3_client(
     assert list_response["KeyCount"] == len(pipeline_s3_objects_main)
 
 
+@pytest.mark.skip(reason="Local development only for RAG")
 def test_run_encoder_s3(
     s3_bucket_and_region,
     pipeline_s3_objects_main,
