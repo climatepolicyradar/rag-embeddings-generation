@@ -7,7 +7,7 @@ from src.ml import SBERTEncoder
 def test_encoder():
     """Assert that we can instantiate an encoder object and encode textual data using the class methods."""
 
-    encoder = SBERTEncoder(config.SBERT_MODEL)
+    encoder = SBERTEncoder(config.SBERT_MODELS[0])
 
     assert encoder is not None
 
@@ -15,4 +15,4 @@ def test_encoder():
 
     assert isinstance(encoder.encode_batch(["Hello world!"] * 100), np.ndarray)
 
-    assert encoder.dimension == 768
+    assert encoder.dimension == 384

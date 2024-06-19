@@ -18,6 +18,7 @@ from src.utils import (
     encode_parser_output,
     get_files_to_process,
     get_Text2EmbeddingsInput_array,
+    encoder_name_as_slug,
 )
 from src.s3 import check_file_exists_in_s3, write_json_to_s3, save_ndarray_to_s3_as_npy
 
@@ -186,8 +187,11 @@ def run_embeddings_generation(
         inputs=tasks, remove_block_types=config.BLOCKS_TO_FILTER
     )
 
-    logger.info(f"Loading sentence-transformer model {config.SBERT_MODEL}")
-    encoder = SBERTEncoder(config.SBERT_MODEL)
+    encoders = dict()
+
+    for model_name in config.SBERT_MODELS:
+        logger.info(f"Loading sentence-transformer model {config.SBERT_MODELS}")
+        encoders[model_name] = SBERTEncoder(model_name)
 
     logger.info(
         "Encoding text from documents.",
@@ -213,33 +217,40 @@ def run_embeddings_generation(
                 extra={"props": {"task_output_path": task_output_path, "exception": e}},
             )
 
-        embeddings_output_path = os.path.join(output_dir, task.document_id + ".npy")
-
-        file_exists = (
-            check_file_exists_in_s3(embeddings_output_path)
-            if s3
-            else os.path.exists(embeddings_output_path)
-        )
-        if file_exists:
-            logger.info(
-                f"Embeddings output file '{embeddings_output_path}' already exists, "
-                "skipping processing."
+        for encoder_name, encoder in encoders.items():
+            encoder_name_slug = encoder_name_as_slug(encoder_name)
+            embeddings_output_path = os.path.join(
+                output_dir, task.document_id + "__" + encoder_name_slug + ".npy"
             )
-            continue
 
-        description_embedding, text_embeddings = encode_parser_output(
-            encoder, task, config.ENCODING_BATCH_SIZE, device=device
-        )
+            file_exists = (
+                check_file_exists_in_s3(embeddings_output_path)
+                if s3
+                else os.path.exists(embeddings_output_path)
+            )
+            if file_exists:
+                logger.info(
+                    f"Embeddings output file '{embeddings_output_path}' already exists, "
+                    "skipping processing."
+                )
+                continue
 
-        combined_embeddings = (
-            np.vstack([description_embedding, text_embeddings])
-            if text_embeddings is not None
-            else description_embedding.reshape(1, -1)
-        )
+            logger.info(
+                f"Encoding text using model {encoder_name}.",
+            )
+            description_embedding, text_embeddings = encode_parser_output(
+                encoder, task, config.ENCODING_BATCH_SIZE, device=device
+            )
 
-        save_ndarray_to_s3_as_npy(
-            combined_embeddings, embeddings_output_path
-        ) if s3 else np.save(embeddings_output_path, combined_embeddings)
+            combined_embeddings = (
+                np.vstack([description_embedding, text_embeddings])
+                if text_embeddings is not None
+                else description_embedding.reshape(1, -1)
+            )
+
+            save_ndarray_to_s3_as_npy(
+                combined_embeddings, embeddings_output_path
+            ) if s3 else np.save(embeddings_output_path, combined_embeddings)
 
 
 if __name__ == "__main__":

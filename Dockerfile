@@ -19,7 +19,7 @@ RUN poetry install
 
 # Download the sentence transformer model
 RUN mkdir /models
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/msmarco-distilbert-dot-v5', cache_folder='/models')"
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-small-en-v1.5', cache_folder='/models')"
 
 # Copy files to image
 COPY ./src ./src

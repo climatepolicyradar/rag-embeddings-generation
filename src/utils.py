@@ -14,6 +14,12 @@ from src.s3 import get_s3_keys_with_prefix, s3_object_read_text
 logger = logging.getLogger(__name__)
 
 
+def encoder_name_as_slug(encoder_name: str) -> str:
+    """Convert an encoder name to a slug by replacing all punctuation with - and lowercasing."""
+
+    return "".join(c if c.isalnum() else "-" for c in encoder_name).lower()
+
+
 def replace_text_blocks(block: ParserOutput, new_text_blocks: Sequence[TextBlock]):
     """Updates the text blocks in the ParserOutput object."""
     if block.pdf_data:
