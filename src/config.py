@@ -11,6 +11,7 @@ SBERT_MODELS: list[str] = [
     "BAAI/bge-small-en-v1.5",  # 384 dim
     "BAAI/bge-base-en-v1.5",  # 768 dim
     "msmarco-distilbert-base-tas-b",  # 768 dim
+    "msmarco-distilbert-dot-v5",  # 768 dim
 ]
 
 LOCAL_DEVELOPMENT: bool = os.getenv("LOCAL_DEVELOPMENT", "False").lower() == "true"
