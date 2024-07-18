@@ -7,7 +7,16 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 
 from src import config
-from src.utils import sliding_window
+
+
+def sliding_window(text: str, window_size: int, stride: int):
+    """Split the text into overlapping windows."""
+    windows = [
+        text[i : i + window_size]
+        for i in range(0, len(text), stride)
+        if i + window_size <= len(text)
+    ]
+    return windows
 
 
 class SentenceEncoder(ABC):

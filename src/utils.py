@@ -224,13 +224,3 @@ def get_Text2EmbeddingsInput_array(
         )
         for id_ in files_to_process_ids
     ]
-
-
-def sliding_window(text: str, window_size: int, stride: int):
-    """Split the text into overlapping windows."""
-    windows = [
-        text[i : i + window_size]
-        for i in range(0, len(text), stride)
-        if i + window_size <= len(text)
-    ]
-    return windows
