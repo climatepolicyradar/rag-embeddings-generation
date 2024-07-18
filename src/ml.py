@@ -20,7 +20,11 @@ class SentenceEncoder(ABC):
 
     @abstractmethod
     def encode_batch(
-        self, text_batch: List[str], batch_size: int, device: Optional[str] = None
+        self,
+        text_batch: List[str],
+        batch_size: int,
+        device: Optional[str] = None,
+        experimental_use_sliding_window: bool = False,
     ) -> np.ndarray:
         """Encode a batch of strings, return a numpy array."""
         raise NotImplementedError
