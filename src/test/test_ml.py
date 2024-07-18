@@ -34,3 +34,7 @@ def test_encoder_sliding_window():
     assert isinstance(embeddings, np.ndarray)
     assert embeddings.shape[0] == len(batch_to_encode)
     assert embeddings.shape[1] == encoder.dimension
+
+    assert np.array_equal(embeddings[0, :], embeddings[2, :])
+    assert np.array_equal(embeddings[0, :], embeddings[3, :])
+    assert not np.array_equal(embeddings[0, :], embeddings[1, :])
