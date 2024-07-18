@@ -7,6 +7,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 
 from src import config
+from src.utils import sliding_window
 
 
 class SentenceEncoder(ABC):
@@ -101,15 +102,6 @@ class SBERTEncoder(SentenceEncoder):
         For args, see encode_batch.
         """
 
-        def sliding_window(text: str, window_size: int, stride: int):
-            # Split the text into overlapping windows with the specified size and stride
-            windows = [
-                text[i : i + window_size]
-                for i in range(0, len(text), stride)
-                if i + window_size <= len(text)
-            ]
-            return windows
-
         max_seq_length = self.encoder.max_seq_length
         assert isinstance(max_seq_length, int)
 
@@ -120,7 +112,7 @@ class SBERTEncoder(SentenceEncoder):
         for text in text_batch:
             if self.get_n_tokens(text) > max_seq_length:
                 windows = sliding_window(
-                    text, max_seq_length, max_seq_length // 2
+                    text, window_size=max_seq_length, stride=max_seq_length // 2
                 )  # Use max_seq_length as window size and half of it as stride
                 processed_texts.extend(windows)
                 window_lengths.append(len(windows))

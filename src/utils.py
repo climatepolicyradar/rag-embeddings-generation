@@ -98,6 +98,7 @@ def encode_parser_output(
     input_obj: ParserOutput,
     batch_size: int,
     device: Optional[str] = None,
+    use_text_block_window: bool = False,
 ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """
     Encode a parser output object.
@@ -116,6 +117,8 @@ def encode_parser_output(
     )
 
     text_blocks = input_obj.get_text_blocks()
+    if use_text_block_window:
+        pass
 
     if text_blocks:
         text_embeddings = encoder.encode_batch(
@@ -197,3 +200,13 @@ def get_Text2EmbeddingsInput_array(
         )
         for id_ in files_to_process_ids
     ]
+
+
+def sliding_window(text: str, window_size: int, stride: int):
+    """Split the text into overlapping windows."""
+    windows = [
+        text[i : i + window_size]
+        for i in range(0, len(text), stride)
+        if i + window_size <= len(text)
+    ]
+    return windows
