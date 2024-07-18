@@ -54,6 +54,48 @@ def test_run_encoder_local(
             # assert np.load(str(Path(output_dir) / "test_html.npy")).shape == (1, 768)
 
 
+def test_run_encoder_local_text_block_window(
+    test_html_file_json,
+    test_pdf_file_json,
+    test_no_content_type_file_json,
+):
+    """Test that the encoder runs with local input and output paths and outputs the correct files."""
+
+    with tempfile.TemporaryDirectory() as input_dir:
+        with tempfile.TemporaryDirectory() as output_dir:
+            # Create test files
+            for file in [
+                test_html_file_json,
+                test_pdf_file_json,
+                test_no_content_type_file_json,
+            ]:
+                file_path = Path(input_dir) / f"{file['document_id']}.json"
+                file_path.write_text(json.dumps(file))
+
+            runner = CliRunner()
+            result = runner.invoke(
+                run_as_cli, [input_dir, output_dir, "--use-text-block-window"]
+            )
+            assert result.exit_code == 0
+
+            assert set(Path(output_dir).glob("*.json")) == {
+                Path(output_dir) / "test_html.json",
+                Path(output_dir) / "test_pdf.json",
+                Path(output_dir) / "test_no_content_type.json",
+            }
+            assert len(list(Path(output_dir).glob("*.npy"))) == 3 * len(SBERT_MODELS)
+
+            for path in Path(output_dir).glob("*.json"):
+                assert ParserOutput.model_validate(json.loads(path.read_text()))
+
+            # for path in Path(output_dir).glob("*.npy"):
+            #     assert np.load(str(path)).shape[1] == 768
+
+            # # test_html has the `has_valid_text` flag set to false, so the numpy file
+            # # should only contain a description embedding
+            # assert np.load(str(Path(output_dir) / "test_html.npy")).shape == (1, 768)
+
+
 @pytest.mark.skip(reason="Local development only for RAG")
 def test_s3_client(
     s3_bucket_and_region,
