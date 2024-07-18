@@ -5,14 +5,13 @@ from cpr_data_access.parser_models import BlockType, ParserOutput, PDFTextBlock
 
 from cli.test.conftest import test_pdf_file_json  # noqa: F401
 from src import config
-from src.ml import SBERTEncoder
+from src.ml import SBERTEncoder, sliding_window
 from src.utils import (
     filter_on_block_type,
     replace_text_blocks,
     filter_blocks,
     get_ids_with_suffix,
     encode_parser_output,
-    sliding_window,
 )
 
 
