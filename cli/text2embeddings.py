@@ -79,6 +79,12 @@ logging.config.dictConfig(DEFAULT_LOGGING)
     default=None,
     help="Optionally limit the number of text samples to process. Useful for debugging.",
 )
+@click.option(
+    "--use-text-block-window",
+    is_flag=True,
+    required=False,
+    help="Whether to encode the text blocks with a window of a block either side, rather than just the text blocks.",
+)
 def run_as_cli(
     input_dir: str,
     output_dir: str,
@@ -86,6 +92,7 @@ def run_as_cli(
     redo: bool,
     device: str,
     limit: Optional[int],
+    use_text_block_window: bool = False,
 ):
     """
     Run CLI to produce embeddings from document parser JSON outputs.
@@ -111,6 +118,7 @@ def run_as_cli(
         redo=redo,
         device=device,
         limit=limit,
+        use_text_block_window=use_text_block_window,
     )
 
 
@@ -121,6 +129,7 @@ def run_embeddings_generation(
     redo: bool,
     device: str,
     limit: Optional[int],
+    use_text_block_window: bool = False,
 ):
     """
     Run CLI to produce embeddings from document parser JSON outputs.
@@ -239,7 +248,11 @@ def run_embeddings_generation(
                 f"Encoding text using model {encoder_name}.",
             )
             description_embedding, text_embeddings = encode_parser_output(
-                encoder, task, config.ENCODING_BATCH_SIZE, device=device
+                encoder,
+                task,
+                config.ENCODING_BATCH_SIZE,
+                device=device,
+                use_text_block_window=use_text_block_window,
             )
 
             combined_embeddings = (

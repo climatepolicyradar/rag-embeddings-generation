@@ -98,6 +98,7 @@ def encode_parser_output(
     input_obj: ParserOutput,
     batch_size: int,
     device: Optional[str] = None,
+    use_text_block_window: bool = False,
 ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """
     Encode a parser output object.
@@ -109,6 +110,7 @@ def encode_parser_output(
     :param input_obj: parser output object
     :param batch_size: batch size for encoding text blocks
     :param device: device to use for encoding
+    :param use_text_block_window: whether to use a block around each text block for encoding
     """
 
     description_embedding = encoder.encode(
@@ -116,12 +118,37 @@ def encode_parser_output(
     )
 
     text_blocks = input_obj.get_text_blocks()
+    text_to_encode = []
+
+    if use_text_block_window:
+        text_to_encode = []
+
+        for idx in range(len(text_blocks)):
+            if idx == 0:
+                idxs_in_window = [idx, idx + 1]
+            elif idx == len(text_blocks) - 1:
+                idxs_in_window = [idx - 1, idx]
+            else:
+                idxs_in_window = [
+                    idx - 1,
+                    idx,
+                    idx + 1,
+                ]
+
+            text_to_encode.append(
+                "\n".join(text_blocks[i].to_string() for i in idxs_in_window)
+            )
+
+    else:
+        text_to_encode = [block.to_string() for block in text_blocks]
 
     if text_blocks:
         text_embeddings = encoder.encode_batch(
-            [block.to_string() for block in text_blocks],
+            text_to_encode,
             batch_size=batch_size,
             device=device,
+            # TODO: we always use a sliding window here. Do we want this?
+            experimental_use_sliding_window=True,
         )
     else:
         text_embeddings = None
