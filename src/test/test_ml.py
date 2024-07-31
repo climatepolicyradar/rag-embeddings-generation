@@ -1,7 +1,7 @@
 import numpy as np
 
 from src import config
-from src.ml import SBERTEncoder
+from src.ml import SBERTEncoder, sliding_window
 
 
 def test_encoder():
@@ -38,3 +38,15 @@ def test_encoder_sliding_window():
     assert np.array_equal(embeddings[0, :], embeddings[2, :])
     assert np.array_equal(embeddings[0, :], embeddings[3, :])
     assert not np.array_equal(embeddings[0, :], embeddings[1, :])
+
+
+def test_sliding_window():
+    """Tests that the sliding_window function returns the correct embeddings."""
+    text = "Hello world! " * 50
+    window_size = 10
+    stride = 5
+
+    windows = sliding_window(text=text, window_size=window_size, stride=stride)
+
+    assert windows[0] == "Hello worl"
+    assert windows[1] == " world! He"

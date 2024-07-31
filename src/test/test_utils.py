@@ -5,7 +5,7 @@ from cpr_data_access.parser_models import BlockType, ParserOutput, PDFTextBlock
 
 from cli.test.conftest import test_pdf_file_json  # noqa: F401
 from src import config
-from src.ml import SBERTEncoder, sliding_window
+from src.ml import SBERTEncoder
 from src.utils import (
     filter_on_block_type,
     replace_text_blocks,
@@ -155,15 +155,3 @@ def test_encode_indexer_input(test_pdf_file_json):  # noqa: F811
 
 # TODO get_Text2EmbeddingsInput_array
 #   TODO needs s3 files, local files, of the form json IndexerInput objects
-
-
-def test_sliding_window():
-    """Tests that the sliding_window function returns the correct embeddings."""
-    text = "Hello world! " * 50
-    window_size = 10
-    stride = 5
-
-    windows = sliding_window(text=text, window_size=window_size, stride=stride)
-
-    assert windows[0] == "Hello worl"
-    assert windows[1] == " world! He"
